@@ -2,13 +2,18 @@
 Shamekh Al Suwi - AI M.Sc - Practical Work - JKU Linz
 
 ## Prerequisite    
--python
+-python 3.12.9
 -docker
 
-
 ```bash
-py -3.11 -m venv comicai # Remove-Item -Recurse -Force comicai
+
+# Install the venv requirements
+
+python -m venv comicai # Remove-Item -Recurse -Force comicai
 comicai\Scripts\activate # deactivate
+pip install -r requirements.txt
+
+# Install Open WebUI
 
 docker run -d `
     -p 3000:8080  `
@@ -23,6 +28,7 @@ docker run -d `
     -e COMFYUI_BASE_URL=http://host.docker.internal:8188 `
     -e WEBUI_NAME="Comic AI" ghcr.io/open-webui/open-webui:main
 
+# Install Ollama to handle Huggingface models 
 
 docker run -d  `
     --gpus=all  `
@@ -34,31 +40,14 @@ docker run -d  `
 
 
 # ComfyUI NVDIA users
- git clone https://github.com/comfyanonymous/ComfyUI
+
+# there is a reason why comfyui original code has no docker container my advise would be to save time and avoid knowing why
+#pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124
+
+git clone https://github.com/comfyanonymous/ComfyUI
 cd comfyui
-
-pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124
-
 pip install -r requirements.txt
-#Pull the Docker image (if you haven't already):
-docker pull ghcr.io/lecode-official/comfyui-docker:latest
-#Save the Docker image to a tar file:
-docker save -o comfyui-docker-latest.tar ghcr.io/lecode-official/comfyui-docker:latest
-#To load the saved image later, use the docker load command
-docker load -i comfyui-docker-latest.tar
-
-docker run `
-    --name comfyui `
-    --detach `
-    --restart always `
-    --volume C:\Users\shsuw\Documents\coding\PracticalWork\aio\comfyui\models:/opt/comfyui/models/checkpoints    --publish 8188:8188 `
-    --runtime nvidia `
-    --gpus all `
-    ghcr.io/lecode-official/comfyui-docker:latest `
-    python main.py --listen
-
-# or python main.py --listen
-
+python main.py --listen
 cd ..
 
 # Searxng
