@@ -1,20 +1,28 @@
 # ComicAI
 Shamekh Al Suwi - AI M.Sc - Practical Work - JKU Linz
 
-## Prerequisite    
--python 3.12.9
--docker
+## Overview
+ComicAI is a project focused on visualizing tabletop role-playing game narratives, particularly Dungeons & Dragons (DnD). The goal is to bridge the gap between oral storytelling and digital visualization by summarizing and structuring game dialogue into compelling visual stories.
+
+### Objectives
+- Summarize game dialogue data
+- Organize it into storytelling structures (e.g., Hero’s Journey)
+- Create a visualization to enhance narrative immersion
+
+## Prerequisites    
+- Python 3.12.9  
+- Docker  
+
+## Installation & Setup
 
 ```bash
-
 # Install the venv requirements
-
-python -m venv comicai # Remove-Item -Recurse -Force comicai
-comicai\Scripts\activate # deactivate
+python -m venv comicai 
+comicai\Scripts\activate 
+# deactivate if needed
 pip install -r requirements.txt
 
 # Install Open WebUI
-
 docker run -d `
     -p 3000:8080  `
     --add-host=host.docker.internal:host-gateway  `
@@ -29,7 +37,6 @@ docker run -d `
     -e WEBUI_NAME="Comic AI" ghcr.io/open-webui/open-webui:main
 
 # Install Ollama to handle Huggingface models 
-
 docker run -d  `
     --gpus=all  `
     --name ollama `
@@ -38,12 +45,7 @@ docker run -d  `
     -p 11434:11434  `
     --name ollama ollama/ollama
 
-
-# ComfyUI NVDIA users
-
-# there is a reason why comfyui original code has no docker container my advise would be to save time and avoid knowing why
-#pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu124
-
+# ComfyUI for NVIDIA users
 git clone https://github.com/comfyanonymous/ComfyUI
 cd comfyui
 pip install -r requirements.txt
@@ -51,22 +53,53 @@ python main.py --listen
 cd ..
 
 # Searxng
-
 mkdir searxng
 cd searxng
 docker pull searxng/searxng
-
 docker run --rm `
     -d -p 32768:8080 `
     -v "${PWD}/searxng:/etc/searxng" `
     -e "BASE_URL=http://localhost:32768/" `
     -e "INSTANCE_NAME=searxng" `
     --name searxng searxng/searxng
-
 cd ..
 
-# Text-To-Speech service by edge browser
-
+# Text-To-Speech service by Edge Browser
 docker run -d -p 5050:5050  -e API_KEY=usability10  travisvn/openai-edge-tts:latest
-
 ```
+
+## Connecting the Components
+After setting up the necessary services, follow these steps to connect them via OpenWebUI:
+
+1. Open OpenWebUI in a browser (`localhost:3000`) and navigate to **Admin Panel → Settings**.
+2. Enable **ComfyUI** for image workflow generation (`http://host.docker.internal:8188`).
+3. Connect **Ollama** in the connection tab (`http://host.docker.internal:11434`) and disable OpenAI API.
+4. Under the **Web Search** tab, configure Searxng (`http://host.docker.internal:32768/search?q=<query>`).
+5. Under the **Audio** tab, set up text-to-speech (`http://host.docker.internal:5050/v1`) with API key (`usability10`).
+
+## Features
+- **Narrative Summarization**: Extracts key dialogue and structures them using storytelling techniques.
+- **Real-time Visualizations**: Generates images for DnD narratives.
+- **Speech-to-Text & Text-to-Speech**: Converts spoken dialogue into text and vice versa.
+- **Search Aggregation**: Uses a metasearch engine for enhanced narrative research.
+
+## Image Generation 
+Refer to https://docs.openwebui.com/tutorials/images documentation on the matter.
+### WorkSpace
+1. Import tools into the tools tab 
+2. import models into the models tab 
+
+
+## Challenges & Future Work
+### Current Limitations
+- The Hero’s Journey framework is difficult to implement at scale.
+- Improvements needed in **data segmentation** and **prompt generation**.
+
+### Future Enhancements
+- Real-time DnD session generation
+- Improved narrative analysis
+- Monetization opportunities
+
+## Conclusion
+Inspired by Carl Sagan’s philosophy: *"To create an apple pie from scratch, you must first create the universe."* Similarly, ComicAI aimed for a mini GPT to transform raw gameplay data into immersive visual narratives.
+ 
