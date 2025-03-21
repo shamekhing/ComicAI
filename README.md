@@ -103,6 +103,7 @@ DO NOT FORGET TO SAVE YOUR CHOICES BEFORE MOVING TO OTHER TABS
 1. Open OpenWebUI in a browser http://localhost:3000 and navigate to **Admin Panel → Settings**. ![alt text](./public/adminpanel.gif)
 
 2. Under Enable image workflow generation under the **Image** tab by importing your **ComfyUI** API file. ![alt text](./public/imggen.gif)
+![alt text](./public/comfyprompt.png)
 
 3. Disable OpenAI API and Connect **Ollama** in the **Connections** tab (`http://host.docker.internal:11434`). ![alt text](./public/ollama.gif)
 
