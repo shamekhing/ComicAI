@@ -13,7 +13,10 @@ ComicAI is a project focused on visualizing tabletop role-playing game narrative
 - Python 3.12.9  
 - Docker  
 
-## Installation & Setup
+
+# Setup Environment 
+
+## Docker Containers Setup
 
 ```bash
 # Install the venv requirements
@@ -36,6 +39,13 @@ docker run -d `
     -e COMFYUI_BASE_URL=http://host.docker.internal:8188 `
     -e WEBUI_NAME="Comic AI" ghcr.io/open-webui/open-webui:main
 
+# Stop and remove the existing container
+docker stop openwebui
+docker rm openwebui
+
+# Remove the Docker volume containing the settings/passwords
+docker volume rm open-webui
+
 # Install Ollama to handle Huggingface models 
 docker run -d  `
     --gpus=all  `
@@ -44,14 +54,6 @@ docker run -d  `
     -v ollama:/root/.ollama  `
     -p 11434:11434  `
     --name ollama ollama/ollama
-
-# ComfyUI for NVIDIA users (In a separate terminal run)
-git clone https://github.com/comfyanonymous/ComfyUI
-cd comfyui
-pip install -r requirements.txt
-python main.py --listen
-cd ..
-    
 
 # Searxng
 mkdir searxng
@@ -71,24 +73,50 @@ docker run -d -p 5050:5050  -e API_KEY=usability10  travisvn/openai-edge-tts:lat
 
 The previous commands are the foundation of our UI. From her we need to set ComfyUI and OpenwebUI from their own UIs
 
-### ComfyUI
-(Optional) Go to http://localhost:8188/ in your browser for standalone image generation 
+## ComfyUI Setup
 
+```bash
+# ComfyUI for NVIDIA users (run in a separate terminal run)
+git clone https://github.com/comfyanonymous/ComfyUI
+cd comfyui
+pip install -r requirements.txt
+python main.py --listen
+cd .. 
+```
 Read more about the models used [here](https://stability.ai/learning-hub/setting-up-and-using-sd3-medium-locally) and download them from [here](https://huggingface.co/ckpt/stable-diffusion-3-medium/tree/main)
 
-1. Go to ComicAI\ComfyUI\models 
-2. Place the model [sd3_medium_incl_clips](https://huggingface.co/ckpt/stable-diffusion-3-medium/resolve/main/sd3_medium_incl_clips.safetensors?download=true) checkpoint(s) in both the [models/checkpoints](./ComfyUI/models/checkpoints/) and models/unet directories of ComfyUI. Alternatively, you can create a symbolic link between models/checkpoints and models/unet to ensure both directories contain the same model checkpoints.
-2. 
+1. Go to **ComicAI\ComfyUI\models**. 
+2. Place the model [sd3_medium_incl_clips](https://huggingface.co/ckpt/stable-diffusion-3-medium/resolve/main/sd3_medium_incl_clips.safetensors?download=true) in the **checkpoints** and **unet** directories.
+3. Place the [ae.safetensors](https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors?download=true) in the **vae** directory.
+4. Place the [clip_l.safetensors](https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors?download=true) and either [t5xxl_fp16.safetensors](https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors?download=true) or [t5xxl_fp8_e4m3fn.safetensors](https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors?download=true) in the **clip** directory.
+5. Go to http://localhost:8188/ in your browser 
+6. Load your model in the checkpoints widget 
+7. (Optional) Run the workflow 
+8. Generate export a workflow API to import in **OpenwebUI** 
+![alt text](./public/ComfyWorkflow.gif)
 
-
-## Connecting the Components
+## Connecting the Components in OpenwebUI 
 After setting up the necessary services, follow these steps to connect them via OpenWebUI:
 
-1. Open OpenWebUI in a browser (`localhost:3000`) and navigate to **Admin Panel → Settings**.
-2. Enable **ComfyUI** for image workflow generation (`http://host.docker.internal:8188`).
-3. Connect **Ollama** in the connection tab (`http://host.docker.internal:11434`) and disable OpenAI API.
-4. Under the **Web Search** tab, configure Searxng (`http://host.docker.internal:32768/search?q=<query>`).
-5. Under the **Audio** tab, set up text-to-speech (`http://host.docker.internal:5050/v1`) with API key (`usability10`).
+DO NOT FORGET TO SAVE YOUR CHOICES BEFORE MOVING TO OTHER TABS
+
+1. Open OpenWebUI in a browser http://localhost:3000 and navigate to **Admin Panel → Settings**. ![alt text](./public/adminpanel.gif)
+
+2. Under Enable image workflow generation under the **Image** tab by importing your **ComfyUI** API file. ![alt text](./public/imggen.gif)
+
+3. Disable OpenAI API and Connect **Ollama** in the **Connections** tab (`http://host.docker.internal:11434`). ![alt text](./public/ollama.gif)
+
+4. Under the **Web Search** tab, configure Searxng (`http://host.docker.internal:32768/search?q=<query>`). ![alt text](./public/metasearch.png)
+
+5. Under the **Audio** tab, set up text-to-speech (`http://host.docker.internal:5050/v1`) with API key (`usability10`). ![alt text](./public/tts.png)
+
+What is left now is enabling users to use these integrations
+
+## Import Models and Tools
+
+1. In your browser navigate to **Workplace → Models** and import the provided model file. ![alt text](./public/models.gif)
+
+2. In the Tools tab also import the provided tool files **tool-image_gen-export** and **tool-web_search-export** ![alt text](./public/tools.png)
 
 ## Features
 - **Narrative Summarization**: Extracts key dialogue and structures them using storytelling techniques.
@@ -98,9 +126,6 @@ After setting up the necessary services, follow these steps to connect them via 
 
 ## Image Generation 
 Refer to https://docs.openwebui.com/tutorials/images documentation on the matter.
-### WorkSpace
-1. Import tools into the tools tab 
-2. import models into the models tab 
 
 
 ## Challenges & Future Work
