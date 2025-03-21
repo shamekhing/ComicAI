@@ -45,12 +45,13 @@ docker run -d  `
     -p 11434:11434  `
     --name ollama ollama/ollama
 
-# ComfyUI for NVIDIA users
+# ComfyUI for NVIDIA users (In a separate terminal run)
 git clone https://github.com/comfyanonymous/ComfyUI
 cd comfyui
 pip install -r requirements.txt
 python main.py --listen
 cd ..
+    
 
 # Searxng
 mkdir searxng
@@ -67,6 +68,18 @@ cd ..
 # Text-To-Speech service by Edge Browser
 docker run -d -p 5050:5050  -e API_KEY=usability10  travisvn/openai-edge-tts:latest
 ```
+
+The previous commands are the foundation of our UI. From her we need to set ComfyUI and OpenwebUI from their own UIs
+
+### ComfyUI
+(Optional) Go to http://localhost:8188/ in your browser for standalone image generation 
+
+Read more about the models used [here](https://stability.ai/learning-hub/setting-up-and-using-sd3-medium-locally) and download them from [here](https://huggingface.co/ckpt/stable-diffusion-3-medium/tree/main)
+
+1. Go to ComicAI\ComfyUI\models 
+2. Place the model [sd3_medium_incl_clips](https://huggingface.co/ckpt/stable-diffusion-3-medium/resolve/main/sd3_medium_incl_clips.safetensors?download=true) checkpoint(s) in both the [models/checkpoints](./ComfyUI/models/checkpoints/) and models/unet directories of ComfyUI. Alternatively, you can create a symbolic link between models/checkpoints and models/unet to ensure both directories contain the same model checkpoints.
+2. 
+
 
 ## Connecting the Components
 After setting up the necessary services, follow these steps to connect them via OpenWebUI:
